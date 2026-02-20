@@ -1,8 +1,7 @@
 fastapi
 uvicorn
-langchain
+langchain-core
 langchain-groq
-langchain-community
 chromadb
 PyPDF2
 gspread
@@ -13,4 +12,3 @@ python-dotenv
 pydantic-settings
 requests
 python-multipart
-sentence-transformers

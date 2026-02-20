@@ -8,9 +8,8 @@ try:
     from chromadb.utils import embedding_functions
 
     _client = chromadb.PersistentClient(path="./chroma_store")
-    _embedding_fn = embedding_functions.SentenceTransformerEmbeddingFunction(
-        model_name="sentence-transformers/all-MiniLM-L6-v2"
-    )
+    # Use Chroma's built-in ONNX embedding function to avoid heavyweight torch dependencies.
+    _embedding_fn = embedding_functions.DefaultEmbeddingFunction()
 except Exception:
     chromadb = None
     Collection = object  # type: ignore[assignment]

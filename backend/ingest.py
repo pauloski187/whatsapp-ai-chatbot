@@ -50,9 +50,8 @@ class IngestService:
             return 0
 
         client = chromadb.PersistentClient(path="./chroma_store")
-        embedding_fn = embedding_functions.SentenceTransformerEmbeddingFunction(
-            model_name="sentence-transformers/all-MiniLM-L6-v2"
-        )
+        # Use Chroma's default embedding function for lighter CPU-only deployments.
+        embedding_fn = embedding_functions.DefaultEmbeddingFunction()
         collection = client.get_or_create_collection(
             name=settings.CHROMA_COLLECTION_NAME,
             embedding_function=embedding_fn,
