@@ -2,7 +2,7 @@
 
 import asyncio
 
-from fastapi import APIRouter, Form, Response
+from fastapi import APIRouter, Form, HTTPException, Response
 from twilio.rest import Client
 from twilio.twiml.messaging_response import MessagingResponse
 
@@ -41,7 +41,6 @@ async def receive_whatsapp_message(From: str = Form(...), Body: str = Form(...))
         print(f"Twilio WhatsApp send to: {twilio_to}")
 
         twiml = MessagingResponse()
-        twiml.message(reply_text)
 
         try:
             twilio_client = _get_twilio_client()
