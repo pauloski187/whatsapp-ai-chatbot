@@ -1,7 +1,12 @@
+.env
 venv/
+chroma_store/
 __pycache__/
 *.pyc
 .DS_Store
+*.egg-info/
+dist/
+build/
 
 backend/.env
 backend/chroma_store/
