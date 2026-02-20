@@ -1,5 +1,6 @@
 """ChromaDB helper functions and singleton client access."""
 
+from pathlib import Path
 from typing import List
 
 try:
@@ -7,7 +8,8 @@ try:
     from chromadb.api.models.Collection import Collection
     from chromadb.utils import embedding_functions
 
-    _client = chromadb.PersistentClient(path="./chroma_store")
+    _store_path = str(Path(__file__).resolve().parent / "chroma_store")
+    _client = chromadb.PersistentClient(path=_store_path)
     # Use Chroma's built-in ONNX embedding function to avoid heavyweight torch dependencies.
     _embedding_fn = embedding_functions.DefaultEmbeddingFunction()
 except Exception:

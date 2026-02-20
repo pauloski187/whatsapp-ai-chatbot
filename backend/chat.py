@@ -60,6 +60,7 @@ class ChatService:
             return handoff_text
 
         history_messages = self._build_history_messages(user_id)
+        self.collection = get_collection(settings.CHROMA_COLLECTION_NAME)
         context_chunks = query_similar(self.collection, message, n=4)
         system_prompt = self._build_system_prompt(context_chunks)
 

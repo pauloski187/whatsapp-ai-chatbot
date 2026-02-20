@@ -16,7 +16,8 @@ class IngestService:
 
     def __init__(self) -> None:
         """Initialize Chroma client and embedding function for ingestion."""
-        self.client = chromadb.PersistentClient(path="./chroma_store")
+        store_path = str(Path(__file__).resolve().parent / "chroma_store")
+        self.client = chromadb.PersistentClient(path=store_path)
         self.ef = embedding_functions.DefaultEmbeddingFunction()
 
     def load_document(self, file_path: str) -> str:
