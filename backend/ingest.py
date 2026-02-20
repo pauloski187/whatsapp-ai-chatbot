@@ -14,6 +14,11 @@ from config import settings
 class IngestService:
     """Handle loading knowledge documents and writing chunks into Chroma."""
 
+    def __init__(self) -> None:
+        """Initialize Chroma client and embedding function for ingestion."""
+        self.client = chromadb.PersistentClient(path="./chroma_store")
+        self.ef = embedding_functions.DefaultEmbeddingFunction()
+
     def load_document(self, file_path: str) -> str:
         """Load text from a PDF or TXT document."""
         path = Path(file_path)
@@ -49,12 +54,9 @@ class IngestService:
         if not chunks:
             return 0
 
-        client = chromadb.PersistentClient(path="./chroma_store")
-        # Use Chroma's default embedding function for lighter CPU-only deployments.
-        embedding_fn = embedding_functions.DefaultEmbeddingFunction()
-        collection = client.get_or_create_collection(
+        collection = self.client.get_or_create_collection(
             name=settings.CHROMA_COLLECTION_NAME,
-            embedding_function=embedding_fn,
+            embedding_function=self.ef,
         )
 
         ids = [f"chunk_{uuid4().hex}" for _ in chunks]
