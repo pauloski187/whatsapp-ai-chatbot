@@ -61,12 +61,14 @@ class ChatService:
 
         history_messages = self._build_history_messages(user_id)
         self.collection = get_collection(settings.CHROMA_COLLECTION_NAME)
-        context_chunks = query_similar(self.collection, message, n=4)
+        context_chunks = query_similar(self.collection, message, n=2)
         system_prompt = self._build_system_prompt(context_chunks)
 
         model = ChatGroq(
             model_name=settings.GROQ_MODEL_NAME,
             groq_api_key=settings.GROQ_API_KEY,
+            temperature=0.7,
+            max_tokens=150,
         )
         message_stack = [SystemMessage(content=system_prompt), *history_messages, HumanMessage(content=message)]
         response = model.invoke(message_stack)
