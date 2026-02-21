@@ -1,41 +1,37 @@
-"""Session memory management keyed by user IDs."""
+"""Simple per-user memory storage without LangChain dependencies."""
 
-from typing import Dict
-
-from langchain_community.memory import ConversationBufferMemory
+from typing import Dict, List
 
 
 class MemoryManager:
-    """Manage per-user conversation memory with bounded message history."""
+    """Store per-user message history in-memory with a 4-message cap."""
 
     def __init__(self) -> None:
-        """Initialize the in-memory store for user sessions."""
-        self._memories: Dict[str, ConversationBufferMemory] = {}
+        """Initialize the user history dictionary."""
+        self._memories: Dict[str, List[Dict[str, str]]] = {}
 
-    def get_memory(self, user_id: str) -> ConversationBufferMemory:
-        """Get or create memory for a user and enforce a 4-message limit."""
+    def get_history(self, user_id: str) -> List[Dict[str, str]]:
+        """Return message history for a user, creating empty history if needed."""
         if user_id not in self._memories:
-            self._memories[user_id] = ConversationBufferMemory(
-                memory_key="chat_history",
-                return_messages=True,
-                input_key="input",
-                output_key="output",
-            )
-        self.trim_history(user_id)
+            self._memories[user_id] = []
+        self._trim_history(user_id)
         return self._memories[user_id]
 
+    def add_message(self, user_id: str, role: str, content: str) -> None:
+        """Append one message and enforce the 4-message limit."""
+        history = self.get_history(user_id)
+        history.append({"role": role, "content": content})
+        self._trim_history(user_id)
+
     def clear_memory(self, user_id: str) -> None:
-        """Delete a user's memory session if it exists."""
+        """Delete a user's stored history if it exists."""
         self._memories.pop(user_id, None)
 
-    def trim_history(self, user_id: str) -> None:
-        """Keep only the last 4 message objects in the user chat history."""
-        memory = self._memories.get(user_id)
-        if memory is None:
-            return
-        history = memory.chat_memory.messages
+    def _trim_history(self, user_id: str) -> None:
+        """Keep only the latest 4 messages for a user."""
+        history = self._memories.get(user_id, [])
         if len(history) > 4:
-            memory.chat_memory.messages = history[-4:]
+            self._memories[user_id] = history[-4:]
 
 
 memory_manager = MemoryManager()
